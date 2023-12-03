@@ -1,0 +1,50 @@
+{% extends 'main/base.html' %}
+{% block conteudo %}
+<style>
+    .botao-direita {
+        float: right;
+        margin-right: 10px; /
+    }
+    .container[name="Principal"] {
+            height: 200px; 
+            
+    }
+    /* Estilo dos botões */
+    .custom-button {
+            display: inline-block;
+            background-color: #275889;
+            color: #fff;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+    }
+    .custom-button:hover {
+            background-color: #007700;
+    }
+</style>
+
+<body>
+    <div class="container" name="Principal">
+    <h2 class="text-center">O que deseja cadastrar?</h2>
+    <p class="text-center">Cada novo padrão depende de sua categoria. 
+        Exemplo: Nome de tabela deve iniciar com "TAB_", portanto a categoria ideal seria "Banco de dados". 
+        Crie suas categorias de acordo as suas necessidades. 
+    </p>
+    <div class="botao-direita">
+        <!-- Botão de login -->
+        <form method="get" action="{% url 'cadcategory' %}" style="display: inline;">
+            <button class="custom-button" type="submit">Nova Categoria</button>
+        </form>
+        <!-- Botão de cadastro novo usuário -->
+        <form method="get" action="{% url 'cadpattern' %}" style="display: inline;">
+            <button class="custom-button" type="submit">Novo Padrão</button>
+        </form>
+    </div>
+</div>
+</body>
+{% endblock %}

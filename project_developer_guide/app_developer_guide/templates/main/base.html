@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Guia do Desenvolvedor</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: "Segoe UI SemiBold", sans-serif;
+            background-color: #275889;
+            margin: 0;
+        }
+        .header-container {
+            text-align: center;
+            background-color: #3679BD;
+            padding: 10px;
+            color: #fff;
+        }
+        .header-container-faixa {
+            text-align: center;
+            background-color: #275889;
+            padding: 5px;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto; /*Centraliza o container no meio horizontal*/
+            padding: 20px;
+            background-color: #e1e7e6e7;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        /* Estilo dos botões */
+        input[type="submit"] {
+            background-color: #275889;
+            color: #fff;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <h1>Guia do Desenvolvedor</h1>
+    </div>
+    <div class="header-container-faixa">
+        <h1 style="color: transparent;"></h1>
+    </div>
+</body>
+{% block conteudo %}
+{% endblock %}
+</html>

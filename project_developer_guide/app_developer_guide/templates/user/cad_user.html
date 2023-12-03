@@ -1,0 +1,74 @@
+{% extends 'main/base.html' %}
+{% block conteudo %}
+
+<style>
+    .container{
+        width: 40%;
+    }
+
+    .container label,
+    .container input {
+        display: block; /* Coloca rótulos e campos de entrada em blocos separados */
+        margin-bottom: 10px; /* Adicione um espaço entre os elementos */
+        font-family: "Segoe UI Semibold", sans-serif;
+    }
+    /* Tamanho campos */
+    .container input[type="text"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+    .container input[type="email"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+    .container input[type="password"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+    .custom-button:hover {
+            background-color: #007700;
+    }
+
+    .new-border{
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 8px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
+
+<body>
+    <div class="container">
+        <h2>Cadastro de Usuário - Solicite um convite</h2>  
+        
+        <form action={% url 'process_cadUser' %} method="post"> 
+            {% csrf_token %}
+            
+            <input type="text" id="nome" name="nome" value="{{ form_data.nome }}" 
+                class="new-border" placeholder="Nome" maxlength="200" style="height: 25px;" required>
+
+            <label for="email"></label>
+            <input type="email" id="email" placeholder="E-mail" 
+                name="email" value="{{ form_data.email }}" 
+                class="new-border" maxlength="50" style="height: 25px;" required>
+
+            <label for="senha"></label>
+            <input type="password" id="senha" name="senha" value="{{ form_data.senha }}" maxlength="8" 
+                style="height: 25px; margin-bottom: 30px;" 
+                class="new-border" placeholder="Máximo 8 caracteres" required>
+
+            <input type="submit" value="Cadastrar" class="custom-button" disabled>
+        </form>
+
+        <div id="error_mail_duplicate" style="color: red; text-align: center; padding: 10px;">
+            {{ error_message }}
+
+            <script>
+                const errorMessage = "{{ error_mail_duplicate }}";
+                if (errorMessage) {
+                    document.getElementById("error_mail_duplicate").textContent = errorMessage;
+                    document.getElementById("email").focus();
+                }   
+            </script>
+        </div>
+    </div>
+</body>
+{% endblock %}

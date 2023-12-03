@@ -1,0 +1,331 @@
+{% extends 'main/base.html' %}
+{% block conteudo %}
+<style>
+    .container {
+        width: 60%;
+        font-family: "Segoe UI Semibold", sans-serif;
+        text-align: center; /* Centraliza conteúdo horizontalmente */
+    }
+
+    .custom-button {
+            display: inline-block;
+            background-color: #275889;
+            color: #fff;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid #ccc;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2; /* Cor de fundo para a linha de cabeçalho */
+    }
+
+    tr:nth-child(even) {
+        background-color: #c4bbbb; /* Cor de fundo para linhas pares */
+    }
+
+    .input-container {
+        margin: 10px auto; /* Centraliza conteúdo verticalmente */
+    }
+
+    .input-container select,
+    .input-container textarea {
+        width: 100%; /* Ocupa 100% da largura disponível */
+        font-family: "Segoe UI Semibold", sans-serif;
+        padding: 5px;
+        margin-bottom: 10px; /* Espaço entre o campo de seleção ou textarea e os botões */
+    }
+
+    .input-field {
+        width: 90%;
+        font-family: "Segoe UI Semibold", sans-serif;
+        padding: 5px;
+        margin-right: 10px;
+    }   
+
+    /* Adicione borda e sombra aos campos de entrada */
+    .input-container select,
+    .input-container textarea,
+    .container input[type="text"] {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 8px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .textarea-field {
+    width: 100%;
+    font-family: "Segoe UI Semibold", sans-serif;
+    padding: 5px;
+    margin-right: 10px;
+    margin-bottom: 10px; /* Espaço entre o textarea e os botões */
+    box-sizing: border-box; /* Adiciona esta regra */
+}
+
+    .container label,
+    .container input {
+        display: block; /* Coloca rótulos e campos de entrada em blocos separados */
+        margin-bottom: 10px; /* Adicione um espaço entre os elementos */
+        font-family: "Segoe UI Semibold", sans-serif;
+    }
+
+    /* Tamanho campos */
+    .container input[type="text"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+
+    .custom-button:hover {
+        background-color: #007700;
+    }
+
+    .view-button{
+        background-color: #275889;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 15px;
+        text-align: center;
+    }
+    .edit-button{
+        background-color: #007700;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 15px;
+        text-align: center;
+    }
+    .delete-button {
+        background-color: #bd4527;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    /* Adicione um estilo para o novo container */
+    .new-container {
+        margin: 10px auto;
+    }
+
+    /* Adicione margem superior para separar os contêineres */
+    .second-container {
+        margin-top: 20px;
+    }
+
+    .description-cell {
+        word-wrap: break-word;
+    }
+    
+    /*table thead tr {
+        display: none;} /* Oculta as linhas de cabeçalho OCULTA O TITULO*/
+    
+</style>
+
+<div class="container">
+    <h2>Padrões em Produção</h2>
+
+    <!-- Primeiro container com campo e botão -->
+    <div class="new-container" style="text-align: left;">
+        <form method="post" action="{% url 'process_cadPattern' %}">
+            {% csrf_token %} <!-- Adicione um token de segurança CSRF -->
+
+            <!-- Campo oculto para armazenar o pattern_id -->
+            <input type="hidden" id="pattern_id" name="pattern_id">
+            <input type="hidden" name="cbCategory_description" id="cbCategory_description" value="">
+
+           
+            <div class="input-container">
+                <select id="comboCategory" name="cbCategory" class="textarea-field" required onchange="capturarDescricaoCategoria()">
+                    <option value="" disabled selected hidden>Selecione uma categoria</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" 
+                        data-description="{{ category.description }}">{{ category.description }}</option>
+                    {% endfor %}                
+                </select>
+            </div>
+           
+            <div class="input-container">
+                <textarea id="newDescricao" name="newDescricao" maxlength="1000"
+                     class="textarea-field" rows="6" required></textarea>
+            </div>
+
+            <button type="submit" class="custom-button">Salvar</button>
+            <button type="button" id="newRegister" onclick="limparCampos()" class="custom-button">Novo Registro</button>
+            
+        </form>
+    </div>
+</div>
+
+
+<div class="container second-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th colspan="3" style="text-align: center;">Escolha uma ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pattern in patterns %}
+                <tr>
+                    <td>{{ pattern.description|slice:":30" }}</td>
+                    <td>
+                        {% if pattern.categories.id_category %}
+                            {{ pattern.categories.description }}
+                        {% else %}
+                            Sem categoria
+                        {% endif %}
+                    </td>
+
+                    <!-- Editar -->
+                    <td style="text-align: center;">
+                        <a href="#" class="edit-button" onclick="editarItem('{{ pattern.id }}', 
+                            '{{ pattern.description|escapejs }}', '{{ pattern.categories.id_category }}')">Editar</a>
+                    </td>
+                    <!-- Excluir -->
+                    <td style="text-align: center;">
+                        <a href="#" class="delete-button" onclick="excluirItem('{{ pattern.id }}', 
+                            '{{ pattern.description|escapejs }}')">Excluir</a>
+                    </td>
+                    <!-- Carregar dados -->
+                    <td style="text-align: center;">
+                        <a href="#" class="view-button" onclick="carregarValorNoCampo('{{ pattern.id }}', 
+                            '{{ pattern.description|escapejs }}', '{{ pattern.categories.id_category }}')">Visualizar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script> 
+    function limparCampos() {
+        // Limpa o campo de descrição
+        document.getElementById("newDescricao").value = "";
+
+        // Limpa o campo oculto para armazenar o pattern_id
+        document.getElementById("pattern_id").value = "";
+
+        // Limpa o campo oculto para armazenar a descrição da categoria
+        document.getElementById("cbCategory_description").value = "";
+
+        // Limpa o campo de seleção de categoria
+        var comboCategory = document.getElementById("comboCategory");
+        comboCategory.value = "";
+        comboCategory.selectedIndex = 0;  // Define a opção padrão como selecionada
+
+        // Ative novamente os campos, se estiverem desativados
+        document.getElementById("newDescricao").disabled = false;
+        comboCategory.disabled = false;
+    }
+
+    // Adicione um ouvinte de evento ao botão "Novo"
+    document.getElementById("newRegister").addEventListener("click", function() {
+        limparCampos();
+    });
+
+    // Função para capturar a descrição da categoria quando o combo é alterado
+    function capturarDescricaoCategoria() {
+        var campoCat = document.getElementById("comboCategory");
+        var campoCatDesc = document.getElementById("cbCategory_description");
+
+        // Adiciona a descrição da categoria ao campo oculto
+        campoCatDesc.value = campoCat.options[campoCat.selectedIndex].getAttribute('data-description');
+    }
+    
+    // Função para carregar valor no campo quando uma linha da tabela é clicada
+    function carregarValorNoCampo(codigo, descricao, categoriaId) {
+        // Seleciona o campo de entrada pelo ID
+        var campoDesc = document.getElementById("newDescricao");
+        var campoCat = document.getElementById("comboCategory");
+      
+        // Define o valor do campo com base nos dados do item clicado
+        campoDesc.value = descricao;
+
+        // Define a categoria selecionada no combo-box pelo ID
+        campoCat.value = categoriaId;
+        var campoCatDesc = document.getElementById("cbCategory_description");
+        campoCatDesc.value = campoCat.options[campoCat.selectedIndex].getAttribute('data-description');
+
+
+        campoDesc.disabled = true;
+        campoCat.disabled = true; 
+    } 
+
+    function editarItem(codigo, descricao, categoriaId) {
+        var campoDesc = document.getElementById("newDescricao");
+        var campoCat = document.getElementById("comboCategory");
+
+        campoDesc.value = descricao;
+        campoCat.value = categoriaId;
+
+        var campoCatDesc = document.getElementById("cbCategory_description");
+        campoCatDesc.value = campoCat.options[campoCat.selectedIndex].getAttribute('data-description');
+        
+        campoDesc.disabled = false;
+        campoCat.disabled = false;
+
+        // Defina o valor do campo oculto com o pattern_id
+        var campoPatternId = document.getElementById("pattern_id");
+        campoPatternId.value = codigo;
+    }  
+
+    function excluirItem(patternId, descricao) {
+        if (confirm('Tem certeza de que deseja excluir o registro ? \n' + descricao)) {
+            $.ajax({
+                type: 'POST',
+                url: '/excluir_pattern/' + patternId + '/',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Não preciso do reload, pois, mando atualizar a lista na visão
+                    // deixando aqui pra usar como exemplo em outras páginas
+                    location.reload(); // Recarrega a página após a exclusão
+                },
+                error: function(error) {
+                    console.log(error);
+            }
+            });
+        }
+}
+    
+    // Função para excluir um item
+    //function excluirItem(codigo) {
+        // Aqui você pode implementar a lógica para excluir o item com o código fornecido
+        // Pode ser necessário confirmar a exclusão com um prompt ou uma mensagem de confirmação.
+        //alert("Item com código " + codigo + " foi excluído.");
+   // }
+</script>
+
+{% endblock %}

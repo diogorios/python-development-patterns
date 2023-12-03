@@ -1,0 +1,71 @@
+{% extends 'main/base.html' %}
+{% block conteudo %}
+
+<style>
+    .container{
+        width: 40%;
+    }
+
+    .container label,
+    .container input{
+        display: block; /* Coloca rótulos e campos de entrada em blocos separados */
+        margin-bottom: 10px; /* Adicione um espaço entre os elementos */
+        font-family: "Segoe UI Semibold", sans-serif;
+
+    }
+   
+    /* Tamanho campos */
+    .container input[type="text"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+    .container input[type="email"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+    .container input[type="password"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+
+    .custom-button:hover {
+        background-color: #007700;
+    }
+
+    .new-border{
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 8px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
+
+<body>
+    <div class="container">
+        <h2>Login</h2>      
+
+        <form action={% url 'process_login' %} method="post"> 
+            {% csrf_token %}
+            
+            <input type="email" class="new-border" id="email" name="email" 
+            placeholder="E-mail" maxlength="50"  style="height: 25px;" required>
+
+            <label for="email"></label>
+            <input type="password" class="new-border" id="senha" name="senha" maxlength="8" 
+                style="height: 25px; margin-bottom: 30px;" placeholder="Máximo 8 caracteres" required>
+
+            <input type="submit" value="Login" class="custom-button">
+        </form>
+
+        <div id="error-message" style="color: red; text-align: center; padding: 10px;">
+            {{ error_message }}
+
+            <script>
+                const errorMessage = "{{ error_message }}";
+                if (errorMessage) {
+                    document.getElementById("error-message").textContent = errorMessage;
+                    document.getElementById("email").focus();
+                }   
+            </script>
+        </div>
+    </div>
+</body>
+{% endblock %}

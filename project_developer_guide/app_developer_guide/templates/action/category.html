@@ -1,0 +1,248 @@
+{% extends 'main/base.html' %}
+{% block conteudo %}
+<style>
+    .container {
+        width: 60%;
+        font-family: "Segoe UI Semibold", sans-serif;
+        text-align: center; /* Centraliza conteúdo horizontalmente */
+    }
+
+    .custom-button {
+            display: inline-block;
+            background-color: #275889;
+            color: #fff;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid #ccc;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2; /* Cor de fundo para a linha de cabeçalho */
+    }
+
+    tr:nth-child(even) {
+        background-color: #c4bbbb; /* Cor de fundo para linhas pares */
+    }
+
+    .input-container {
+        margin: 10px auto; /* Centraliza conteúdo verticalmente */
+    }
+
+    .input-field {
+        width: 90%;
+        font-family: "Segoe UI Semibold", sans-serif;
+        padding: 5px;
+        margin-right: 10px;
+    }
+
+    .container label,
+    .container input {
+        display: block; /* Coloca rótulos e campos de entrada em blocos separados */
+        margin-bottom: 10px; /* Adicione um espaço entre os elementos */
+        font-family: "Segoe UI Semibold", sans-serif;
+    }
+
+    /* Tamanho campos */
+    .container input[type="text"] {
+        width: 95%; /* Define a largura como 50% */
+    }
+
+    .custom-button:hover {
+        background-color: #007700;
+    }
+
+    .view-button{
+        background-color: #275889;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 15px;
+        text-align: center;
+    }
+    .edit-button{
+        background-color: #007700;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 15px;
+        text-align: center;
+    }
+    .delete-button {
+        background-color: #bd4527;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    /* Adicione um estilo para o novo container */
+    .new-container {
+        margin: 10px auto;
+    }
+
+    .new-border{
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 8px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Adicione margem superior para separar os contêineres */
+    .second-container {
+        margin-top: 20px;
+    }
+    
+    /*table thead tr {
+        display: none;} /* Oculta as linhas de cabeçalho OCULTA O TITULO*/
+    
+</style>
+
+<div class="container">
+    <h2>Categorias</h2>
+
+    <!-- Primeiro container com campo e botão -->
+    <div class="new-container" style="text-align: left;">
+        <form method="post" action="{% url 'process_cadCategory' %}">
+            {% csrf_token %} <!-- Adicione um token de segurança CSRF -->
+
+            <!-- Campo oculto para armazenar o category.id -->
+            <input type="hidden" id="category_id" name="category_id">
+
+            <input type="text" class="new-border" id="newDescricao" name="newDescricao" maxlength="50" 
+                style="height: 25px; text-transform: uppercase;" required>
+            <button type="submit" class="custom-button">Salvar</button>
+            <button type="button" id="searchButton" onclick="limparCampos()" class="custom-button">Novo Registro</button>
+            
+        </form>
+    </div>
+</div>
+
+<div class="container second-container">
+    <!-- Segundo container com a tabela -->
+    <table>
+        <thead>
+            <tr>
+                <!-- <th>Código</th>-->
+                <th>Descrição</th>
+                <th colspan="3" style="text-align: center;">Escolha uma ação</th> <!-- Mescla as duas últimas colunas e centraliza o nome "Ação" -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+                <tr>
+                    <!-- <td>{{category.id}}</td>-->
+                    <td>{{category.description}}</td>
+                    
+                    <!-- Editar -->
+                    <td style="text-align: center;"><a href="#" 
+                        class="edit-button" onclick="editarItem('{{ category.id }}', '{{ category.description }}')">Editar</a></td>
+                    <!-- Excluir -->
+                    <td style="text-align: center;"><a href="#" 
+                        class="delete-button" onclick="excluirItem('{{ category.id }}', '{{ category.description }}')">Excluir</a></td>
+                     <!-- Excluir -->
+                     <td style="text-align: center;"><a href="#" 
+                        class="view-button" onclick="carregarValorNoCampo('{{ category.id }}', '{{ category.description }}')">Visualizar</a></td>    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script> 
+    function limparCampos() {
+        // Limpa o campo de descrição
+        document.getElementById("newDescricao").value = "";
+        
+        // Limpa o campo oculto para armazenar o pattern_id
+        document.getElementById("category_id").value = "";       
+
+        // Ative novamente os campos, se estiverem desativados
+        document.getElementById("newDescricao").disabled = false;
+    }
+
+    // Adicione um ouvinte de evento ao botão "Novo"
+    document.getElementById("newRegister").addEventListener("click", function() {
+        limparCampos();
+    });
+
+    // Função para carregar valor no campo quando uma linha da tabela é clicada
+    function carregarValorNoCampo(codigo, descricao) {
+        // Seleciona o campo de entrada pelo ID
+        var campoNome = document.getElementById("newDescricao");
+
+        // Define o valor do campo com base nos dados do item clicado
+        campoNome.value = descricao;
+        campoNome.disabled = true;
+    }
+    
+    // Função para editar um item
+    function editarItem(codigo, descricao) {
+        // Aqui você pode implementar a lógica para edição do item
+        // Por exemplo, preencher o campo de descrição com o valor atual e permitir a edição
+        var campoDescricao = document.getElementById("newDescricao");
+        campoDescricao.value = descricao;
+        campoDescricao.disabled = false;
+        
+        // Defina o valor do campo oculto com o category.id
+        var campoCategoryId = document.getElementById("category_id");
+        campoCategoryId.value = codigo;
+    }
+
+    function excluirItem(categoryId, descricao) {
+        if (confirm('Tem certeza de que deseja excluir o registro ? \n' + descricao)) {
+            $.ajax({
+                type: 'POST',
+                url: '/excluir/' + categoryId + '/',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Não preciso do reload, pois, mando atualizar a lista na visão
+                    // deixando aqui pra usar como exemplo em outras páginas
+                    location.reload(); // Recarrega a página após a exclusão
+                },
+                error: function(error) {
+                    console.log(error);
+            }
+            });
+        }
+}
+    
+    // Função para excluir um item
+    //function excluirItem(codigo) {
+        // Aqui você pode implementar a lógica para excluir o item com o código fornecido
+        // Pode ser necessário confirmar a exclusão com um prompt ou uma mensagem de confirmação.
+        //alert("Item com código " + codigo + " foi excluído.");
+   // }
+</script>
+
+{% endblock %}
